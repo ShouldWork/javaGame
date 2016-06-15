@@ -38,8 +38,8 @@ function initSprites(img){
 function initSprites2(img){
     birdSprite = [
         new Sprite(img,7,5,40,35),
-        new Sprite(img,0,0,0,0),
-        new Sprite(img,0,0,0,0),
+        new Sprite(img,45,9,35,30),
+        new Sprite(img,85,5,30,30),
         new Sprite(img,0,0,0,0),
         new Sprite(img,0,0,0,0),
         new Sprite(img,0,0,0,0),
