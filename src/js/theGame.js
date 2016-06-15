@@ -23,8 +23,7 @@ $(document).ready(function(){
     canvasSetup();
     currentState = states.Splash;
     document.body.appendChild(canvas);
-    $("#canvasContainer").css({"border": "5px solid #000","width": width,"height": height});
-    //$("body").append($("#canvasContainer"));
+    
     character = new Character();
    // pillars = new PillarCollections();
     loadGraphics();
@@ -40,41 +39,72 @@ function windowSetup(){
     height = window.innerHeight;
     var inputEvent = "touchstart";
     if (width >= 500){
-        width = 380;
-        height = 430;
+        width = 680;
+        height = 380;
         inputEvent = "mousedown";
     }
-   // $(document).on(inputEvent,onpress);
+    //$(document).on(inputEvent,onpress);
     //document.addEventListener(inputeEvent,onpress);
 }
 
 
 function canvasSetup(){
     canvas = document.createElement("canvas");
-    canvas.setAttribute("id","canvasContainer");
-
-
-    renderingContext = canvas.getContext("2d"); //$("#canvasContainer")[0].getContext('2d');
+    renderingContext = canvas.getContext('2d');
+    canvas.setAttribute("width",width);
+    canvas.setAttribute("height",height);    
 }
 
 
 function loadGraphics(){
+    var backimg = new Image();
+    backimg.src = 'images/jungle.png';
+    backimg.onload = function() {
+    var pattern = renderingContext.createPattern(backimg, 'repeat');
+        renderingContext.rect(0, 0, canvas.width, canvas.height);
+        renderingContext.fillStyle = pattern;
+        renderingContext.fill();
+      };
     var img = new Image();
-    img.src = "images/sheet.png";
+    img.src = "images/runningcat (1).png";
     img.onload = function() {
         initSprites(this);
-        renderingContext.fillStyle = backgroundSprite.color;
-        renderingContext.fillRect(0,0,width,height);
-        fishSprite[0].draw(renderingContext,5,5);
-       /*
-        okButton = {
-            x: (width - okButtonSprite.width) /2,
-            y: height - 200,
-            width: okButtonSprite.width,
-            height: okButtonSprite.height
-        };
-        */
-        //gameLoop();
+        catSprite[0].draw(renderingContext,10,height - catSprite[0].height - 10);
     };
+
+    var birdimg = new Image();
+    birdimg.src = 'images/bird.png';
+    birdimg.onload = function(){
+        initSprites2(this);
+        birdSprite[0].draw(renderingContext,width - birdSprite[0].width,200);
+    };
+    //var timer = setInterval(gameLoop,100);
+}
+
+
+var i = 0,
+    j = 0;
+function gameLoop(){
+    j++;
+    if (i >= 7) {
+        i=-1;
+    }
+    
+    var backimg = new Image();
+    backimg.onload = function() {
+    var pattern = renderingContext.createPattern(backimg, 'repeat');
+        renderingContext.rect(-150, 0, canvas.width, canvas.height);
+        renderingContext.fillStyle = pattern;
+        renderingContext.fill();
+      };
+    backimg.src = 'images/jungle.png';
+    var img = new Image();
+    img.src = "images/runningcat3.png";
+    img.onload = function() {
+        //initSprites(this);
+        catSprite[i].draw(renderingContext,10,height - catSprite[0].height - 10);
+    };
+    renderingContext.clearRect(0, 0, canvas.width, canvas.height);
+    i++
 }
 
