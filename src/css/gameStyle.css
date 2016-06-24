@@ -1,8 +1,7 @@
-#gameContainer {
-    height: 420px;
-    width: 480px;
-    border: 2px solid gray;
+#canvasEl {
     box-shadow: 5px 10px 30px black;
+    margin-left: 550px;
+    margin-top: 15%;
 }
 
 #mainContainer {
@@ -12,10 +11,17 @@
 }
 
 #background {
-    position:
-    height: 100%;
-    width: 100%;
-    background-size: contain;
-    background: transparent url('../images/Green-Background.jpg') no-repeat;
+    position: absolute;
+    top: 100px;
+    bottom: 0;
+    right: 0;
+    left: 130px;
+    background-size: cover;
+    background: transparent url('../images/bigback.jpg') no-repeat;
     z-index: -1;
+}
+
+button {
+    height: 100px;
+    width: 100px;
 }

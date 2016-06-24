@@ -8,6 +8,7 @@ var
     frames = 0,
     cat,
     obstacle,
+	gaming,
     obstacles = [],
     pillars,
     currentState,
@@ -16,7 +17,8 @@ var
     states = {
         Splash: 0,
         Game: 1,
-        Score: 2
+        Score: 2,
+		Crash: 3,
     };
 
 
@@ -26,8 +28,7 @@ $(document).ready(function(){
 	canvasSetup();
 	currentState = states.Game;
 	cat = new Cat();
-	bckgr = new Background();
-	obstacle = new Obstacle(50,50);
+	//obstacle = new Obstacle(50,50);
 	loadGraphics();
 });
 
@@ -35,7 +36,7 @@ function windowSetup(){
     width = window.innerWidth;
     height = window.innerHeight;
     if (width >= 500){
-        width = 780;
+        width = 705;
         height = 380;
     }
 
@@ -49,7 +50,7 @@ function canvasSetup(){
 	$("body").append(canvas); 
 	$("#canvasEl").css({"border": "10px solid black"});
 	ctx = $("#canvasEl")[0].getContext('2d');
-	$("#canvasEl").on("click",function(){
+	$(document).on("click",function(){
 		onpress();
 	});
 	canvasWidth = $("#canvasEl").prop("width");
@@ -57,38 +58,48 @@ function canvasSetup(){
 }
 
 function Obstacle(width,height){
-	
-	this.height = height;
-	this.width = width; 
+	this.height = 80;
+	this.width = 180;
 	this.start = canvasWidth;
 	this.top = canvasHeight - this.height;
 	this.bottom = canvasHeight;
-	//this.x = x;
-	//this.y = y;
+	this.x = 50;
+	this.y = 100;
 	this.color = "blue"; 
     this.update = function() {
-    	var rightSide = canvasWidth + this.width,
-    		speed = 8;
-    	this.start -= speed; 
+
+    	this.start -= 8;
     	this.x = this.start;
     	this.left = this.x;
     	this.right = this.x + this.width;
-        ctx.fillStyle = "blue";
-        ctx.fillRect(this.x, canvasHeight - this.height - 14, this.width,this.height );
-        if(this.x < -this.width){
-        	this.start = rightSide; 
-        }
         if (obstacles.length >= 2){
 			obstacles.pop();
 		}
+		this.draw();
 		this.collide();
 		//console.log(this.height);
 
     };
+	this.draw = function () {
+		var rightSide = canvasWidth + this.width;
+		var img=document.createElement('img');
+		img.src='images/tree.png';
+		ctx.drawImage(img,0,0,180,80,this.x,canvasHeight - this.height - 14,180,80);
+		ctx.drawImage(img,0,0,180,80,this.x + this.width,canvasHeight - this.height - 14,180,80);
+		//ctx.fillStyle = "blue";
+		//ctx.fillRect(this.x, canvasHeight - this.height - 14, this.width,this.height );
+		if(this.x < -this.width){
+			this.start = rightSide;
+		}
+	};
+
     this.collide = function(){
-    	console.log(rockbottom);
-    	if (cat.x + catSprite[1].width >= this.left){
-    		rockbottom = this.top - catSprite[1].height - 40;
+    	//console.log(rockbottom);
+		if (cat.y + catSprite[1].height  > this.top && cat.x + catSprite[1].width >= this.left + 20){
+			currentState = states.Crash;
+		}
+    	if (cat.x + catSprite[1].width >= this.left + 20){
+    		rockbottom = this.top - catSprite[1].height - 20;
     		
     	} else {
     		rockbottom = 260;
@@ -134,21 +145,12 @@ function Cat() {
 		}
 	};
 	this.update = function() {
-
-		if (this.y >= rockbottom - 10){
-			cat.animation = [0,1,2,3,4,5,6,7];
-			jumping = false
-		}
-		
-		var n = currentState === states.Splash ? 10 : 5;
-		//console.log(cat.y);
-		this.frame += frames % n === 0 ? 1 : 0;
-		this.frame %= this.animation.length; 
-
 		if (currentState === states.Splash) {
 			this.updateIdleCat();
-		} else {
+		} else if (currentState == states.Game){
 			this.updatePlayingCat();
+		} else if (currentState === states.Crash){
+			this.UpdateCrashingCat();
 		}
 	};
 
@@ -161,93 +163,114 @@ function Cat() {
 	};
 
 	this.updateIdleCat = function (){
+		jumping = false;
 		this.y = height - 280 + 5 * Math.cos(frames / 10);
 		this.rotation = 100;
 	};
 	this.updatePlayingCat = function(){
+		if (this.y >= rockbottom - 10){
+			cat.animation = [0,1,2,3,4,5,6,7];
+			jumping = false;
+		}
+		var n = 5;
+		this.frame += frames % n === 0 ? 1 : 0;
+		this.frame %= this.animation.length;
+	};
+
+	this.UpdateCrashingCat = function(){
+		jumping = false;
+		cat.animation = 0;
+		$("body").append("<button>This</button>");
+		gaming = cancelAnimationFrame(gameLoop);
 	};
 
 
 	this.draw = function (ctx){
 		var n = this.animation[this.frame];
 		catSprite[n].draw(ctx,this.x,this.y);
+		/*
 		ctx.fillRect(this.x,this.y,1,10);
 		ctx.fillRect(this.x + catSprite[1].width,this.y,1,10);
-		ctx.fillRect(this.x,this.y + catSprite[1].height,1,10)
+		ctx.fillRect(this.x,this.y + catSprite[1].height,1,10);
 		ctx.fillRect(this.x + catSprite[1].width,this.y + catSprite[1].height,1,10);
+		*/
 		ctx.restore();
 	};
 }
 
-function Background (){
+function Background (img){
 	var x = 0;
 	var y = 0;
+	this.speedX = 5;
+	this.width = 505;
+	ctx.fillStyle = "green";
+
+	this.img = img;
+	console.log(img);
 	this.scroll = function(){
-	    var pattern = ctx.createPattern(backimg, 'repeat');
-	        ctx.rect(x, 0, width, height);
-	        ctx.fillStyle = pattern;
-	        ctx.fill();
-	        ctx.drawImage(backimg,x,0);
-	        console.log("background")
+		if (x <= -canvasWidth + 200){
+			x = 0;
+		}
+		x -= this.speedX;
+		ctx.drawImage(this.img, x, y);
+		ctx.drawImage(this.img, x + this.width ,0);
+		ctx.drawImage(this.img, x + this.width + this.width,0);
 	  };
 }
 
 
 function loadGraphics() {
-    // Initiate graphics and ok button
     backimg = new Image();
     backimg.src = 'images/jungle.png';
+	bckgr = new Background(backimg);
     var img = new Image();
     img.src = "images/runningcat (1).png";
     img.onload = function() {
         initSprites(this);
-        gameLoop();
-    };
 
+    };
+	tree = new Image();
+	tree.src = backimg.src;
+	tree.onload = function(){
+		initTreeSprite(this);
+		gameLoop();
+	}
 }
 
 function gameLoop(){
+
 	update();
-	render();
-	window.requestAnimationFrame(gameLoop);
+	if (currentState === states.Game){
+		render();
+	}
+	 gaming = requestAnimationFrame(gameLoop);
 }
 
 function update(){
 	frames++;
-	
-	if(frames === 1 || everyinterval(Math.floor((Math.random() * 1550) + 150))){
-		obstacle = new Obstacle(500,50);
+
+	if(frames === 1 || everyinterval( 150 )){  // Math.floor((Math.random() * 550) + 150))){
+		obstacle = new Obstacle(500,Math.ceil(Math.random() * 100) + 50);
 		obstacles.push(obstacle);
-		//console.log(obstacle);
-		//obstacle.update();
 	}
-
-	ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-	//ctx.drawImage("<div></div>",10,100);
-
-	for (var i = 0; i < obstacles.length; i++){
-		obstacles[i].update()
-	}
-
 	cat.fall();
 	cat.update();
-	
 }
 
 function render(){
-	//bckgr.scroll();
-	
+	ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+	bckgr.scroll();
 	cat.draw(ctx);
+	for (var i = 0; i < obstacles.length; i++){
+		obstacles[i].update();
+	}
 }
 
 function onpress(){
 	cat.jump();
-	//cat.gravity = n;
-	//cat.jump();
 }
 
 function everyinterval(n) {
-	//console.log("everyInterval: " + frames);
     if ((frames / n) % 1 == 0) {return true;}
     return false;
 }

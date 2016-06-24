@@ -1,4 +1,5 @@
 var catSprite,
+    tree,
     birdSprite;
 
 Sprite.prototype.draw = function (renderingContext, x, y){
@@ -35,7 +36,7 @@ function initSprites(img){
     ];
 }
 
-function initSprites2(img){
+function initBirdSprite(img){
     birdSprite = [
         new Sprite(img,7,5,40,35),
         new Sprite(img,45,9,35,30),
@@ -49,4 +50,11 @@ function initSprites2(img){
         new Sprite(img,0,0,0,0),
         new Sprite(img,0,0,0,0)
     ];
+}
+
+
+function initTreeSprite(img){
+    tree = [
+        new Sprite(img,100,100,150,100)
+    ]
 }
