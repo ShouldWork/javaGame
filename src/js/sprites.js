@@ -38,18 +38,19 @@ function initSprites(img){
 
 function initBirdSprite(img){
     birdSprite = [
-        new Sprite(img,7,5,40,35),
+        new Sprite(img,7,5,30,35),
         new Sprite(img,45,9,35,30),
         new Sprite(img,85,5,30,30),
-        new Sprite(img,0,0,0,0),
-        new Sprite(img,0,0,0,0),
-        new Sprite(img,0,0,0,0),
-        new Sprite(img,0,0,0,0),
-        new Sprite(img,0,0,0,0),
-        new Sprite(img,0,0,0,0),
-        new Sprite(img,0,0,0,0),
+        new Sprite(img,12,45,40,30),
+        new Sprite(img,50,50,35,30),
+        new Sprite(img,90,50,35,30),
+        new Sprite(img,130,45,40,30),
+        new Sprite(img,170,50,40,30),
+        new Sprite(img,215,45,40,30),
+        new Sprite(img,255,50,40,30),
         new Sprite(img,0,0,0,0)
     ];
+    console.log("initBirdSprite " + birdSprite[0].width);
 }
 
 
